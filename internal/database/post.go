@@ -9,7 +9,7 @@ import (
 
 type Post struct {
 	CreateAt  time.Time `json:"create_at"`
-	Id        int64     `json:"id"`
+	ID        int64     `json:"id"`
 	UserEmail string    `json:"user_email"`
 	Title     string    `json:"title"`
 	Body      string    `json:"body"`
@@ -18,7 +18,7 @@ type Post struct {
 func (c Client) CreatePost(userEmail, title, body string) (Post, error) {
 	post := Post{
 		CreateAt:  time.Now().UTC(),
-		Id:        int64(uuid.New().ID()),
+		ID:        int64(uuid.New().ID()),
 		UserEmail: userEmail,
 		Title:     title,
 		Body:      body,
@@ -29,7 +29,7 @@ func (c Client) CreatePost(userEmail, title, body string) (Post, error) {
 		return post, err
 	}
 
-	db.Posts[post.Id] = post
+	db.Posts[post.ID] = post
 	err = c.updateDB(db)
 	if err != nil {
 		return post, err
@@ -38,7 +38,7 @@ func (c Client) CreatePost(userEmail, title, body string) (Post, error) {
 	return post, nil
 }
 
-func (c Client) GetPosts() ([]Post, error) {
+func (c Client) GetPosts(userEmail string) ([]Post, error) {
 	db, err := c.readDB()
 	if err != nil {
 		return nil, err
@@ -46,7 +46,9 @@ func (c Client) GetPosts() ([]Post, error) {
 
 	posts := make([]Post, 0, len(db.Posts))
 	for _, post := range db.Posts {
-		posts = append(posts, post)
+		if post.UserEmail == userEmail {
+			posts = append(posts, post)
+		}
 	}
 
 	return posts, nil
@@ -94,7 +96,7 @@ func (c Client) UpdatePost(id int64, title, body string) error {
 	if body != "" {
 		post.Body = body
 	}
-	
+
 	db.Posts[id] = post
 
 	return c.updateDB(db)
