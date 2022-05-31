@@ -59,6 +59,15 @@ func (apiCfg apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request
 
 func (apiCfg apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
 	userEmail := strings.TrimPrefix(r.URL.Path, "/users/")
+	if userEmail == "" {
+		users, err := apiCfg.dbClient.GetUsers()
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err)
+			return
+		}
+		respondWithJSON(w, 200, users)
+		return
+	}
 	user, err := apiCfg.dbClient.GetUser(userEmail)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
