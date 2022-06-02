@@ -21,4 +21,6 @@ func (apiCfg apiConfig) EnsureDB() error {
 func (apiCfg apiConfig) RegisterEndpoint(m *http.ServeMux) {
 	m.HandleFunc("/users", apiCfg.endpointUsersHandler)
 	m.HandleFunc("/users/", apiCfg.endpointUsersHandler)
+	m.HandleFunc("/posts", apiCfg.endpointPostsHandler)
+	m.HandleFunc("/posts/", apiCfg.endpointPostsHandler)
 }
